@@ -1,0 +1,758 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "S.I.G.A.M API",
+    "version": "1.0.0",
+    "description": "Documentación de la API de S.I.G.A.M generada a partir de la colección de Postman."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Servidor local de desarrollo"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Autenticación de Usuarios",
+        "description": "Endpoint para iniciar sesión con credenciales de usuario (Administrador, Médico, Enfermero, Farmacéutico).",
+        "tags": [
+          "Autenticación"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "examples": {
+                "Admin": {
+                  "value": {
+                    "correo": "admin@sigam.com",
+                    "password": "Admin12345*"
+                  }
+                },
+                "Medico": {
+                  "value": {
+                    "correo": "laura@sigam.com",
+                    "password": "Medico12345*"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticación exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas"
+          }
+        }
+      }
+    },
+    "/usuarios": {
+      "post": {
+        "summary": "Crear Usuario",
+        "description": "Crea un nuevo usuario en el sistema (Médico, Enfermero, Enfermero Jefe, Farmacéutico, etc.).",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearUsuarioRequest"
+              },
+              "examples": {
+                "CrearMedico": {
+                  "summary": "Crear usuario médico",
+                  "value": {
+                    "id_rol": 2,
+                    "tipo_documento": "CC",
+                    "documento": "1012345678",
+                    "nombres": "Laura",
+                    "apellidos": "Gómez",
+                    "correo": "laura@sigam.com",
+                    "especialidad": "Medicina general"
+                  }
+                },
+                "CrearEnfermero": {
+                  "summary": "Crear usuario enfermero",
+                  "value": {
+                    "id_rol": 3,
+                    "tipo_documento": "CC",
+                    "documento": "1023456789",
+                    "nombres": "Pedro",
+                    "apellidos": "Martínez",
+                    "correo": "pedro@sigam.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente"
+          },
+          "400": {
+            "description": "Datos de entrada inválidos"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/usuarios/enfermeros": {
+      "get": {
+        "summary": "Listar Enfermeros Disponibles",
+        "tags": [
+          "Usuarios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de enfermeros disponible retornada exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/pacientes": {
+      "post": {
+        "summary": "Crear Paciente",
+        "tags": [
+          "Pacientes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearPacienteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Paciente creado exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/medicamentos": {
+      "post": {
+        "summary": "Crear Medicamento",
+        "tags": [
+          "Medicamentos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearMedicamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Medicamento creado exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/vias-administracion": {
+      "get": {
+        "summary": "Listar Vías de Administración",
+        "tags": [
+          "Paramétricas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista devuelta correctamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/lotes": {
+      "get": {
+        "summary": "Ver Lotes Disponibles",
+        "tags": [
+          "Lotes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lotes encontrados"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear Lote",
+        "tags": [
+          "Lotes"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearLoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lote creado exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/ordenes": {
+      "post": {
+        "summary": "Crear/Editar Orden Médica",
+        "tags": [
+          "Órdenes Médicas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearOrdenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Orden procesada exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/aplicaciones": {
+      "get": {
+        "summary": "Listar Aplicaciones",
+        "tags": [
+          "Aplicaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listado obtenido exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/aplicaciones/{id}/asignar": {
+      "patch": {
+        "summary": "Asignar la Dosis a un Enfermero",
+        "tags": [
+          "Aplicaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de la aplicación",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_enfermero": {
+                    "type": "integer",
+                    "example": 3
+                  }
+                },
+                "required": [
+                  "id_enfermero"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dosis asignada correctamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/aplicaciones/{id}/registrar": {
+      "patch": {
+        "summary": "Registrar Administración de Dosis",
+        "tags": [
+          "Aplicaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de la aplicación",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "estado": {
+                    "type": "string",
+                    "example": "administrada"
+                  },
+                  "observacion": {
+                    "type": "string",
+                    "example": "Sin novedad"
+                  }
+                },
+                "required": [
+                  "estado"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dosis registrada exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/dispensaciones": {
+      "post": {
+        "summary": "Dispensar Medicamento",
+        "tags": [
+          "Dispensaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispensacionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dispensación realizada con éxito"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    },
+    "/auditoria": {
+      "get": {
+        "summary": "Consultar Auditoría",
+        "tags": [
+          "Auditoría"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registros de auditoría obtenidos exitosamente"
+          },
+          "401": {
+            "description": "No autorizado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "correo",
+          "password"
+        ],
+        "properties": {
+          "correo": {
+            "type": "string",
+            "format": "email",
+            "example": "admin@sigam.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Admin12345*"
+          }
+        }
+      },
+      "CrearUsuarioRequest": {
+        "type": "object",
+        "required": [
+          "id_rol",
+          "tipo_documento",
+          "documento",
+          "nombres",
+          "apellidos",
+          "correo"
+        ],
+        "properties": {
+          "id_rol": {
+            "type": "integer",
+            "example": 2
+          },
+          "tipo_documento": {
+            "type": "string",
+            "example": "CC"
+          },
+          "documento": {
+            "type": "string",
+            "example": "1012345678"
+          },
+          "nombres": {
+            "type": "string",
+            "example": "Laura"
+          },
+          "apellidos": {
+            "type": "string",
+            "example": "Gómez"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email",
+            "example": "laura@sigam.com"
+          },
+          "especialidad": {
+            "type": "string",
+            "example": "Medicina general"
+          }
+        }
+      },
+      "CrearPacienteRequest": {
+        "type": "object",
+        "required": [
+          "tipo_documento",
+          "documento",
+          "nombres",
+          "apellidos",
+          "fecha_nacimiento",
+          "genero"
+        ],
+        "properties": {
+          "tipo_documento": {
+            "type": "string",
+            "example": "CC"
+          },
+          "documento": {
+            "type": "string",
+            "example": "1098765432"
+          },
+          "nombres": {
+            "type": "string",
+            "example": "Carlos"
+          },
+          "apellidos": {
+            "type": "string",
+            "example": "Ruiz"
+          },
+          "fecha_nacimiento": {
+            "type": "string",
+            "format": "date",
+            "example": "1985-06-15"
+          },
+          "genero": {
+            "type": "string",
+            "example": "M"
+          },
+          "telefono": {
+            "type": "string",
+            "example": "3001234567"
+          }
+        }
+      },
+      "CrearMedicamentoRequest": {
+        "type": "object",
+        "required": [
+          "codigo_cums",
+          "nombre_generico",
+          "nombre_comercial",
+          "tipo_medicamento",
+          "es_controlado",
+          "stock_minimo"
+        ],
+        "properties": {
+          "codigo_cums": {
+            "type": "string",
+            "example": "CUMS-001"
+          },
+          "nombre_generico": {
+            "type": "string",
+            "example": "Acetaminofén"
+          },
+          "nombre_comercial": {
+            "type": "string",
+            "example": "Dolex"
+          },
+          "tipo_medicamento": {
+            "type": "string",
+            "example": "Analgésico"
+          },
+          "es_controlado": {
+            "type": "boolean",
+            "example": false
+          },
+          "stock_minimo": {
+            "type": "integer",
+            "example": 20
+          }
+        }
+      },
+      "CrearLoteRequest": {
+        "type": "object",
+        "required": [
+          "id_medicamento",
+          "id_via",
+          "id_presentacion",
+          "num_lote",
+          "fecha_vence",
+          "stock_actual"
+        ],
+        "properties": {
+          "id_medicamento": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_via": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_presentacion": {
+            "type": "integer",
+            "example": 1
+          },
+          "num_lote": {
+            "type": "string",
+            "example": "L-2026-01"
+          },
+          "fecha_vence": {
+            "type": "string",
+            "format": "date",
+            "example": "2027-12-31"
+          },
+          "stock_actual": {
+            "type": "integer",
+            "example": 100
+          }
+        }
+      },
+      "CrearOrdenRequest": {
+        "type": "object",
+        "required": [
+          "id_paciente",
+          "detalles",
+          "medicamentos"
+        ],
+        "properties": {
+          "id_paciente": {
+            "type": "integer",
+            "example": 1
+          },
+          "detalles": {
+            "type": "string",
+            "example": "Control de dolor postoperatorio"
+          },
+          "medicamentos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id_medicamento": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "id_via": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "id_presentacion": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "frecuencia_horas": {
+                  "type": "integer",
+                  "example": 8
+                },
+                "total_aplicaciones": {
+                  "type": "integer",
+                  "example": 6
+                },
+                "observaciones": {
+                  "type": "string",
+                  "example": "Con alimentos"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DispensacionRequest": {
+        "type": "object",
+        "required": [
+          "id_detalle_orden",
+          "id_lote",
+          "cantidad_entregada"
+        ],
+        "properties": {
+          "id_detalle_orden": {
+            "type": "integer",
+            "example": 2
+          },
+          "id_lote": {
+            "type": "integer",
+            "example": 1
+          },
+          "cantidad_entregada": {
+            "type": "integer",
+            "example": 6
+          }
+        }
+      }
+    }
+  }
+}
