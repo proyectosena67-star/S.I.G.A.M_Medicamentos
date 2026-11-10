@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 CREATE TABLE IF NOT EXISTS public.roles (
 
     id_rol      serial4      NOT NULL,
@@ -407,9 +405,7 @@ INSERT INTO public.presentacion (nombre, cantidad, unidad) VALUES
 
     ('spray',      100, 'ml')
 
-ON CONFLICT (nombre, cantidad, unidad) DO NOTHING;
-
-=======
+ON CONFLICT (nombre, cantidad, unidad)
 -- Esquema de S.I.G.A.M. (idempotente: puedes ejecutarlo varias veces).
 -- Si tu base ya tiene estas tablas, no se modifica nada.
 
@@ -540,4 +536,4 @@ CREATE TABLE IF NOT EXISTS auditoria_logs (
 
 CREATE INDEX IF NOT EXISTS idx_aplicacion_estado ON aplicacion(estado, fecha_hora_programada);
 CREATE INDEX IF NOT EXISTS idx_auditoria_fecha ON auditoria_logs(fecha_hora DESC);
->>>>>>> ac915a2e15800178d8ba060e2f7e5cb95088d461
+

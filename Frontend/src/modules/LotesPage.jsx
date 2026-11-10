@@ -4,6 +4,7 @@ import Button from "../components/UI/Button";
 import Input from "../components/UI/Input";
 import { loteService } from "../services/loteService";
 import { medicamentoService } from "../services/medicamentoService";
+import { formatearFecha } from "../utils/formatos";
 import LoteForm from "./LoteForm";
 
 export default function LotesPage() {
@@ -37,12 +38,24 @@ export default function LotesPage() {
     cargarDatos();
   }, []);
 
+  // El backend envía en cada lote: id_lote, id_medicamento, num_lote, fecha_vence, stock_actual
+  // y "medicamento" (solo el nombre genérico). El resto de datos del medicamento se busca
+  // en la lista de medicamentos que ya está cargada.
+  const datosDelMedicamento = (lote) => {
+    const encontrado = medicamentos.find((m) => m.id_medicamento === lote.id_medicamento);
+    return {
+      generico: encontrado?.nombre_generico ?? lote.medicamento ?? "",
+      comercial: encontrado?.nombre_comercial ?? "",
+      cums: encontrado?.codigo_cums ?? "",
+    };
+  };
+
   const lotesFiltrados = lotes.filter((lote) => {
-    const texto = busqueda.toLowerCase();
-    return (
-      lote.numero_lote?.toLowerCase().includes(texto) ||
-      lote.medicamento?.nombre_generico?.toLowerCase().includes(texto) ||
-      lote.medicamento?.codigo_cums?.toLowerCase().includes(texto)
+    const texto = busqueda.toLowerCase().trim();
+    if (!texto) return true;
+    const med = datosDelMedicamento(lote);
+    return [lote.num_lote, med.generico, med.comercial, med.cums].some((campo) =>
+      String(campo ?? "").toLowerCase().includes(texto)
     );
   });
 
@@ -116,6 +129,7 @@ export default function LotesPage() {
             placeholder="Nº de lote, medicamento o CUMS..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
+            autoComplete="off"
           />
         </div>
         <div style={{ fontSize: "12px", fontWeight: "600", color: "#64748b" }}>
@@ -130,66 +144,69 @@ export default function LotesPage() {
         </div>
       ) : lotesFiltrados.length > 0 ? (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
-          {lotesFiltrados.map((lote) => (
-            <div
-              key={lote.id_lote}
-              style={{
-                backgroundColor: "#ffffff",
-                borderRadius: "12px",
-                border: "1px solid #cbd5e1",
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
-                padding: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: "14px"
-              }}
-            >
-              {/* Encabezado de la Tarjeta */}
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
-                  <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#0f172a", margin: 0 }}>
-                    {lote.medicamento?.nombre_comercial || lote.medicamento?.nombre_generico || "Medicamento"}
-                  </h3>
-                  <span style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: "600", color: "#2d5faa", backgroundColor: "#f0f4f8", padding: "2px 6px", borderRadius: "4px", border: "1px solid #cbd5e1" }}>
-                    {lote.numero_lote}
-                  </span>
+          {lotesFiltrados.map((lote) => {
+            const med = datosDelMedicamento(lote);
+            return (
+              <div
+                key={lote.id_lote}
+                style={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: "12px",
+                  border: "1px solid #cbd5e1",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+                  padding: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  gap: "14px"
+                }}
+              >
+                {/* Encabezado de la Tarjeta */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                    <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#0f172a", margin: 0 }}>
+                      {med.comercial || med.generico || "Medicamento"}
+                    </h3>
+                    <span style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: "600", color: "#2d5faa", backgroundColor: "#f0f4f8", padding: "2px 6px", borderRadius: "4px", border: "1px solid #cbd5e1" }}>
+                      {lote.num_lote}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: "12.5px", color: "#64748b", margin: "4px 0 0 0" }}>
+                    Genérico: <strong>{med.generico}</strong>
+                  </p>
                 </div>
-                <p style={{ fontSize: "12.5px", color: "#64748b", margin: "4px 0 0 0" }}>
-                  Genérico: <strong>{lote.medicamento?.nombre_generico}</strong>
-                </p>
-              </div>
 
-              {/* Información detallada del lote */}
-              <div style={{ backgroundColor: "#f8fafc", padding: "12px", borderRadius: "8px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: "6px", fontSize: "12.5px", color: "#475569" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ color: "#64748b" }}>Stock Actual:</span>
-                  <strong style={{ color: "#0f172a" }}>{lote.stock_actual} unidades</strong>
+                {/* Información detallada del lote */}
+                <div style={{ backgroundColor: "#f8fafc", padding: "12px", borderRadius: "8px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: "6px", fontSize: "12.5px", color: "#475569" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "#64748b" }}>Stock Actual:</span>
+                    <strong style={{ color: "#0f172a" }}>{lote.stock_actual} unidades</strong>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "4px", borderTop: "1px solid #e2e8f0" }}>
+                    <span style={{ color: "#64748b" }}>Vencimiento:</span>
+                    <span style={{ fontWeight: "600", color: "#0369a1", backgroundColor: "#e0f2fe", padding: "2px 8px", borderRadius: "6px", fontSize: "11.5px" }}>
+                      {formatearFecha(lote.fecha_vence)}
+                    </span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "4px", borderTop: "1px solid #e2e8f0" }}>
-                  <span style={{ color: "#64748b" }}>Vencimiento:</span>
-                  <span style={{ fontWeight: "600", color: "#0369a1", backgroundColor: "#e0f2fe", padding: "2px 8px", borderRadius: "6px", fontSize: "11.5px" }}>
-                    {lote.fecha_vencimiento}
-                  </span>
-                </div>
-              </div>
 
-              {/* Botón de acción */}
-              <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "4px" }}>
-                <Button
-                  variante="secundario"
-                  style={{ fontSize: "12px", padding: "6px 16px" }}
-                  onClick={() => alAbrirEditar(lote)}
-                >
-                  Editar Lote
-                </Button>
+                {/* Botón de acción */}
+                <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "4px" }}>
+                  <Button
+                    variante="secundario"
+                    style={{ fontSize: "12px", padding: "6px 16px" }}
+                    onClick={() => alAbrirEditar(lote)}
+                  >
+                    Editar Lote
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div style={{ backgroundColor: "#ffffff", padding: "40px", textAlign: "center", borderRadius: "12px", border: "1px solid #cbd5e1", color: "#94a3b8" }}>
-          No se encontraron lotes registrados.
+          {busqueda ? "Ningún lote coincide con la búsqueda." : "No se encontraron lotes registrados."}
         </div>
       )}
 

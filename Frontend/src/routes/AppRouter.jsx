@@ -3,10 +3,12 @@ import MainLayout from "../components/Layout/MainLayout";
 import Alert from "../components/UI/Alert";
 import { useAuth } from "../hooks/useAuth";
 import DashboardPage from "../modules/DashboardPage";
+import DispensacionesPage from "../modules/DispensacionesPage";
+import LotesPage from "../modules/LotesPage";
 import LoginPage from "../modules/LoginPage";
+import MedicamentosPage from "../modules/MedicamentosPage";
+import OrdenesPage from "../modules/OrdenesPage";
 import PacientesPage from "../modules/PacientesPage";
-import MedicamentosPage from "../modules/MedicamentosPage"; 
-import LotesPage from "../modules/LotesPage"; // 1. Asegúrate de tener la importación
 import { MODULOS, menuParaRol } from "../utils/modulos";
 import PaginaPendiente from "./PaginaPendiente";
 import RutaProtegida from "./RutaProtegida";
@@ -14,7 +16,9 @@ import RutaProtegida from "./RutaProtegida";
 const PAGINAS = {
   "/pacientes": PacientesPage,
   "/medicamentos": MedicamentosPage,
-  "/lotes": LotesPage, // 2. ¡Agrega esta línea para mapear la ruta de lotes!
+  "/lotes": LotesPage,
+  "/dispensaciones": DispensacionesPage,
+  "/ordenes": OrdenesPage, // <--- ¡Añadido aquí correctamente!
 };
 
 function LayoutConSesion() {
