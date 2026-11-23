@@ -24,4 +24,19 @@ export const authController = {
     });
     responder(res, null, 200, "Contraseña actualizada correctamente");
   }),
+  restablecerPassword: envolver(async (req, res) => {
+    const idUsuario = await authService.restablecerPasswordPorCorreo(req.body.correo, req.body.nuevaPassword);
+    
+    if (idUsuario) {
+      await auditoriaService.registrar({
+        id_usuario: idUsuario,
+        accion: "RESTABLECER_PASSWORD",
+        tabla_afectada: "usuarios",
+        registro_id: idUsuario,
+        direccion_ip: obtenerIp(req),
+      });
+    }
+
+    responder(res, null, 200, "Si el correo está registrado, la contraseña ha sido actualizada.");
+  }),
 };

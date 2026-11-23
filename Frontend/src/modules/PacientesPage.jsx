@@ -14,7 +14,11 @@ import PacienteForm from "./PacienteForm";
 
 export default function PacientesPage() {
   const { usuario } = useAuth();
-  const puedeCambiarEstado = usuario.rol === ROLES.ADMINISTRADOR;
+  
+  // Validamos los permisos según el rol
+  const esAdministrador = usuario.rol === ROLES.ADMINISTRADOR;
+  const esMedico = usuario.rol === ROLES.MEDICO;
+  const puedeCambiarEstado = esAdministrador;
 
   const [pacientes, setPacientes] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -73,6 +77,7 @@ export default function PacientesPage() {
     }
   }
 
+  // Definición de columnas dinámicas
   const columnas = [
     { clave: "documento", titulo: "Documento", render: (p) => `${p.tipo_documento} ${p.documento}` },
     { clave: "nombre", titulo: "Paciente", render: (p) => `${p.nombres} ${p.apellidos}` },
@@ -84,7 +89,11 @@ export default function PacientesPage() {
     { clave: "genero", titulo: "Género", render: (p) => etiquetaDe(GENEROS, p.genero) },
     { clave: "telefono", titulo: "Teléfono", render: (p) => p.telefono ?? "—" },
     { clave: "estado", titulo: "Estado", render: (p) => <EstadoBadge estado={p.estado} /> },
-    {
+  ];
+
+  // Si no es médico (ej. Administrador), agregamos la columna de acciones de edición/estado
+  if (!esMedico) {
+    columnas.push({
       clave: "acciones",
       titulo: "Acciones",
       alinear: "derecha",
@@ -107,21 +116,24 @@ export default function PacientesPage() {
           )}
         </span>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <div className="pagina">
       <div className="pagina__cabecera">
         <h1>Pacientes</h1>
-        <Button
-          onClick={() => {
-            setAviso("");
-            setFormulario(null);
-          }}
-        >
-          Nuevo paciente
-        </Button>
+        {/* El botón "Nuevo paciente" se oculta por completo si el usuario es Médico */}
+        {!esMedico && (
+          <Button
+            onClick={() => {
+              setAviso("");
+              setFormulario(null);
+            }}
+          >
+            Nuevo paciente
+          </Button>
+        )}
       </div>
 
       {aviso && <Alert tono="exito">{aviso}</Alert>}
@@ -156,11 +168,12 @@ export default function PacientesPage() {
         vacio={
           busqueda
             ? "Ningún paciente coincide con la búsqueda."
-            : "Todavía no hay pacientes. Pulsa «Nuevo paciente» para registrar el primero."
+            : "Todavía no hay pacientes registrados."
         }
       />
 
-      {formulario !== undefined && (
+      {/* El formulario modal de registro/edición solo se renderiza si no es médico */}
+      {!esMedico && formulario !== undefined && (
         <PacienteForm
           key={formulario?.id_paciente ?? "nuevo"}
           paciente={formulario}

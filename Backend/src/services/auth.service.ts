@@ -47,4 +47,17 @@ export const authService = {
     }
     await usuarioRepository.actualizarPassword(idUsuario, await hashearPassword(datos.password_nueva));
   },
+  async restablecerPasswordPorCorreo(correo: string, nuevaPassword: string): Promise<number | null> {
+  // 1. Buscar al usuario por correo usando el método real de tu repositorio
+  const usuario = await usuarioRepository.buscarPorCorreoConPassword(correo);
+  if (!usuario) return null;
+
+  // 2. Hashear la nueva contraseña
+  const passwordHash = await hashearPassword(nuevaPassword);
+
+  // 3. Actualizar el password_hash en la base de datos
+  await usuarioRepository.actualizarPassword(usuario.id_usuario, passwordHash);
+
+  return usuario.id_usuario;
+  },
 };

@@ -19,7 +19,7 @@ export const MODULOS = [
   { ruta: "/medicamentos", titulo: "Medicamentos", roles: [ADMINISTRADOR, FARMACEUTICO] },
   { ruta: "/lotes", titulo: "Lotes", roles: [ADMINISTRADOR, FARMACEUTICO] },
   { ruta: "/ordenes", titulo: "Órdenes médicas", roles: [MEDICO, ENFERMERO_JEFE] },
-  { ruta: "/aplicaciones", titulo: "Aplicaciones", roles: [ENFERMERO_JEFE, ENFERMERO] },
+  { ruta: "/aplicaciones", titulo: "Aplicaciones", roles: [ENFERMERO_JEFE, ENFERMERO] }, // <-- El médico no la incluye
   { ruta: "/dispensaciones", titulo: "Dispensaciones", roles: [ENFERMERO_JEFE, FARMACEUTICO] },
   { ruta: "/auditoria", titulo: "Auditoría", roles: [ADMINISTRADOR] },
 ];
