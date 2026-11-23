@@ -1,7 +1,6 @@
 import { Pool, PoolClient, QueryResult, types } from "pg";
 import { env } from "../config/env";
 
-// DATE (oid 1082) se devuelve como texto "AAAA-MM-DD" para evitar corrimientos de zona horaria.
 types.setTypeParser(1082, (valor: string) => valor);
 
 export const pool = new Pool({
